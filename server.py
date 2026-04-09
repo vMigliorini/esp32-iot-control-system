@@ -7,7 +7,7 @@ import json
 BROKER = "test.mosquitto.org"
 PORTA = 1883
 TOPICO_PUBLICAR = "pucpr/pc/comandos" # PC publica aqui
-TOPICO_ASSINAR = "pucpr/micro/dados" # PC recebe daqui
+TOPICO_ASSINAR = "pucpr/+/dados" # PC recebe daqui
 
 
 CLIENT_ID = "caua-da-massa1"
@@ -56,6 +56,8 @@ def main():
     print("\n--- COMANDOS DISPONIVEIS ---")
     print(" led_on -> Liga o LED")
     print(" led_off -> Desliga o LED")
+    print(" buzzer_on -> Liga o Buzzer")
+    print(" buzzer_off -> Desliga o Buzzer")
     print(" status -> Solicita dados do sensor")
     print(" sair -> Encerra o programa")
     print(" (ou digite qualquer texto para enviar)\n")
