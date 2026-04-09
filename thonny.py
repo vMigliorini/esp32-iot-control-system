@@ -19,16 +19,14 @@ BROKER = "test.mosquitto.org"
 PORTA = 1883
 CLIENT_ID = "caua-da-massa2"           # Use seu RA para evitar conflito
 
-TOPICO_PUBLICAR = "pucpr/micro/dados"   # Micro publica aqui
+TOPICO_PUBLICAR = "pucpr/sensor_dht/dados"   # Micro publica aqui
+TOPICO2_PUBLICAR = "pucpr/sensor_hcsr/dados"   # Micro publica aqui
 TOPICO_ASSINAR = "pucpr/pc/comandos"    # Micro recebe daqui
 
-TOPICO2_PUBLICAR = "pucpr/micro2/dados"   # Micro publica aqui
-TOPICO2_ASSINAR = "pucpr/pc2/comandos"    # Micro recebe daqui
 
 sensor = dht.DHT11(Pin(23))
 trig = Pin(28, Pin.OUT)
 echo = Pin(32, Pin.IN)
-button = Pin(14, Pin.IN, Pin.PULL_UP)
 led1 = Pin(15, Pin.machine.Pin.OUT)
 buzzer = Pin(17, Pin.OUT)
 
@@ -59,6 +57,7 @@ def conectar_wifi():
 # ---- Callback de mensagens recebidas ----
 def callback_mensagem(topico, mensagem):
     global led_estado
+    global buzzer_estado
     topico = topico.decode("utf-8")
     payload = mensagem.decode("utf-8")
     print(f"[MICRO] Recebido em '{topico}': {payload}")
@@ -70,23 +69,43 @@ def callback_mensagem(topico, mensagem):
             led.value(1)
             led_estado = True
             print("[MICRO] LED ligado!")
-            publicar_estado()
+            publicar_estado_led()
         elif comando == "led_off":
             led.value(0)
             led_estado = False
             print("[MICRO] LED desligado!")
-            publicar_estado()
+            publicar_estado_led()
+            
+        elif comando == "buzzer_on":
+            buzzer.value(1)
+            buzzer_estado = True
+            print("[MICRO] BUZZER ligado!")
+            publicar_estado_buzzer()
+            
+        elif comando == "buzzer_off":
+            buzzer.value(0)
+            buzzer_estado = False
+            print("[MICRO] BUZZER desligado!")
+            publicar_estado_buzzer()
+            
         elif comando == "status":
             publicar_dados_sensor()
+            publicar_dados_hcsr04()
         else:
             print(f"[MICRO] Comando desconhecido: {comando}")
     except Exception as e:
         print(f"[MICRO] Erro ao processar: {e}")
 
 # ---- Funcoes de publicacao ----
-def publicar_estado():
+def publicar_estado_led():
     estado = "ligado" if led_estado else "desligado"
     msg = json.dumps({"led": estado})
+    client.publish(TOPICO_PUBLICAR, msg)
+    print(f"[MICRO] Publicado: {msg}")
+    
+def publicar_estado_buzzer():
+    estado = "ligado" if buzzer_estado else "desligado"
+    msg = json.dumps({"buzzer": estado})
     client.publish(TOPICO_PUBLICAR, msg)
     print(f"[MICRO] Publicado: {msg}")
     
@@ -107,23 +126,17 @@ def medir_distancia():
     return distancia
 
 
-def publicar_dados_button_hcsr04():
-    if button.value() == 1:
-        dados = {
-            "distancia": medir_distancia()
-        }
-        led1.value(1)
-        buzzer.value(1)
-        comando = {
-            "led":     
-        }
-        msg = json.dumps(dados)
-        client.publish(TOPICO_PUBLICAR2, msg) #MUDAR
-        print(f"[MICRO] Dados publicados: {msg}")
-    led1.value(0)
-    buzzer.value(0)
+def publicar_dados_hcsr04():
+    
+    dados = {
+        "distancia": medir_distancia()
+    }
+    msg = json.dumps(dados)
+    client.publish(TOPICO2_PUBLICAR, msg) #MUDAR
+    print(f"[MICRO] Dados publicados: {msg}")
+    
 def publicar_dados_sensor():
-
+    sensor.measure()
     dados = {
         "temperatura": sensor.temperature(),
         "umidade": sensor.humidity(),
@@ -156,12 +169,11 @@ try:
     while True:
         # Verifica novas mensagens (nao-bloqueante)
         client.check_msg()
-        publicar_dados_button_hcsr04() # pra ficar verificando se ele ta apertando o botao (dentro da funcao) pra postar
         
         # A cada 30 segundos, publica dados automaticamente
         contador += 1
         if contador >= 30:
-            sensor.measure()
+            publicar_dados_hcsr04()
             publicar_dados_sensor()
             contador = 0
         time.sleep(1)
