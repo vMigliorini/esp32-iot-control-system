@@ -34,6 +34,7 @@ buzzer = Pin(17, Pin.OUT)
 # ESP32: pino 2 | Pico W: pino "LED" | ESP8266: pino 2
 led = machine.Pin(2, machine.Pin.OUT)
 led_estado = False
+publicado = True
 
 # ---- Conexao Wi-Fi ----
 def conectar_wifi():
@@ -58,6 +59,7 @@ def conectar_wifi():
 def callback_mensagem(topico, mensagem):
     global led_estado
     global buzzer_estado
+    global publicado
     topico = topico.decode("utf-8")
     payload = mensagem.decode("utf-8")
     print(f"[MICRO] Recebido em '{topico}': {payload}")
@@ -65,6 +67,11 @@ def callback_mensagem(topico, mensagem):
     try:
         dados = json.loads(payload)
         comando = dados.get("comando", "")
+        status_entrega = dados.get("status", "")
+        if status_entrega == "mensagem_recebida":
+            publicado = True
+            print("[MICRO] Dados entregues!")
+            
         if comando == "led_on":
             led.value(1)
             led_estado = True
@@ -98,12 +105,16 @@ def callback_mensagem(topico, mensagem):
 
 # ---- Funcoes de publicacao ----
 def publicar_estado_led():
+    global publicado
+    publicado = False
     estado = "ligado" if led_estado else "desligado"
     msg = json.dumps({"led": estado})
     client.publish(TOPICO_PUBLICAR, msg)
     print(f"[MICRO] Publicado: {msg}")
     
 def publicar_estado_buzzer():
+    global publicado
+    publicado = False
     estado = "ligado" if buzzer_estado else "desligado"
     msg = json.dumps({"buzzer": estado})
     client.publish(TOPICO_PUBLICAR, msg)
@@ -127,7 +138,8 @@ def medir_distancia():
 
 
 def publicar_dados_hcsr04():
-    
+    global publicado
+    publicado = False
     dados = {
         "distancia": medir_distancia()
     }
@@ -136,6 +148,8 @@ def publicar_dados_hcsr04():
     print(f"[MICRO] Dados publicados: {msg}")
     
 def publicar_dados_sensor():
+    global publicado
+    publicado = False
     sensor.measure()
     dados = {
         "temperatura": sensor.temperature(),
@@ -167,8 +181,11 @@ print("[MICRO] Aguardando comandos...\n")
 contador = 0
 try:
     while True:
-        # Verifica novas mensagens (nao-bloqueante)
+        
         client.check_msg()
+        if not publicado:
+            #logica de reenvio
+            
         
         # A cada 30 segundos, publica dados automaticamente
         contador += 1
