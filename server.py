@@ -23,6 +23,12 @@ def on_connect(client, userdata, flags, rc, properties):
 
 def on_message(client, userdata, msg):
     """Chamada quando uma mensagem e recebida."""
+    try:
+        confirmacao_entrega = json.dumps({"status": "mensagem_recebida"})
+        client.publish(TOPICO_PUBLICAR, confirmacao_entrega)
+    except Exception:
+        print("\n[PC] Erro ao confirmar entrega ao broker")
+
     payload = msg.payload.decode("utf-8")
     print(f"[PC] Mensagem recebida em '{msg.topic}': {payload}")
     # Tenta interpretar como JSON
