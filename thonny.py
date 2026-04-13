@@ -19,8 +19,6 @@ TOPICO2_PUBLICAR = "pucpr/sensor_hcsr/dados"
 TOPICO_ASSINAR = "pucpr/pc/comandos"
 
 sensor = dht.DHT11(Pin(23))
-trig = Pin(26, Pin.OUT)
-echo = Pin(32, Pin.IN)
 sensor_hcsr = HCSR04(trigger_pin=26, echo_pin=32, echo_timeout_us=10000)
 buzzer = Pin(15, Pin.OUT)
 led = machine.Pin(2, Pin.OUT)
@@ -110,19 +108,6 @@ def publicar_estado_buzzer():
     print(f"[MICRO] Publicado: {msg}")
     
 def medir_distancia():
-    #trig.value(0)
-    #time.sleep_us(2)
-    #trig.value(1)
-    #time.sleep_us(10)
-    #trig.value(0)
-    #while echo.value() == 0:
-        #pulse_start = time.ticks_us()
-    #while echo.value() == 1:
-        #pulse_end = time.ticks_us()
-    #pulse_duration = time.ticks_diff(pulse_end, pulse_start)
-    #distancia = (pulse_duration / 2) * 0.0343
-    #return distancia
-    
     distancia = sensor_hcsr.distance_cm() 
     return distancia
 
