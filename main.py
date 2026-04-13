@@ -20,7 +20,7 @@ TOPICO_PUBLICAR = f"{PREFIXO}/sensor_dht/dados"
 TOPICO2_PUBLICAR = f"{PREFIXO}/sensor_hcsr/dados"
 TOPICO3_PUBLICAR = f"{PREFIXO}/led/dados"
 TOPICO4_PUBLICAR = f"{PREFIXO}/buzzer/dados"
-TOPICO_ASSINAR = "pucpr/pc/comandos"
+TOPICO_ASSINAR = f"{PREFIXO}/pc/comandos"
 
 sensor = dht.DHT11(Pin(23))
 sensor_hcsr = HCSR04(trigger_pin=26, echo_pin=32, echo_timeout_us=10000)
