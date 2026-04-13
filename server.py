@@ -6,15 +6,13 @@ import json
 BROKER = "test.mosquitto.org"
 PORTA = 1883
 TOPICO_PUBLICAR = "pucpr/pc/comandos" 
-TOPICO_ASSINAR_DHT = "pucpr/sensor_dht/dados" 
-TOPICO_ASSINAR_HCSR = "pucpr/sensor_hcsr/dados"
+TOPICO_ASSINAR = "pucpr/+/dados" 
 CLIENT_ID = "pc-pucpr-001"
 
 def on_connect(client, userdata, flags, rc, properties):
     if rc == 0:
         print("[PC] Conectado ao broker MQTT!")
-        client.subscribe(TOPICO_ASSINAR_DHT, qos=1)
-        client.subscribe(TOPICO_ASSINAR_HCSR, qos=1)
+        client.subscribe(TOPICO_ASSINAR, qos=1)
     else:
         print(f"[PC] Falha na conexao, codigo: {rc}")
 
