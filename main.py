@@ -13,10 +13,13 @@ SENHA = "sua_senha_aqui"
 BROKER = "test.mosquitto.org"
 PORTA = 1883
 CLIENT_ID = "user_ESP32"
+PREFIXO = ""  # gere um UUID: python -c "import uuid; print(uuid.uuid4())"
     
 
-TOPICO_PUBLICAR = "pucpr/sensor_dht/dados"
-TOPICO2_PUBLICAR = "pucpr/sensor_hcsr/dados"
+TOPICO_PUBLICAR = f"{PREFIXO}/sensor_dht/dados"
+TOPICO2_PUBLICAR = f"{PREFIXO}/sensor_hcsr/dados"
+TOPICO3_PUBLICAR = f"{PREFIXO}/led/dados"
+TOPICO4_PUBLICAR = f"{PREFIXO}/buzzer/dados"
 TOPICO_ASSINAR = "pucpr/pc/comandos"
 
 sensor = dht.DHT11(Pin(23))
@@ -88,13 +91,13 @@ def callback_mensagem(topico, mensagem):
 def publicar_estado_led():
     estado = "ligado" if led_estado else "desligado"
     msg = json.dumps({"led": estado})
-    client.publish(TOPICO_PUBLICAR, msg, qos=1)
+    client.publish(TOPICO3_PUBLICAR, msg, qos=1)
     print(f"[MICRO] Publicado: {msg}")
     
 def publicar_estado_buzzer():
     estado = "ligado" if buzzer_estado else "desligado"
     msg = json.dumps({"buzzer": estado})
-    client.publish(TOPICO_PUBLICAR, msg, qos=1)
+    client.publish(TOPICO4_PUBLICAR, msg, qos=1)
     print(f"[MICRO] Publicado: {msg}")
     
 def medir_distancia():
