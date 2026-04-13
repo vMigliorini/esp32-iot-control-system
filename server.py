@@ -5,6 +5,7 @@ import json
 
 BROKER = "test.mosquitto.org"
 PORTA = 1883
+PREFIXO = "" #
 TOPICO_PUBLICAR = "pucpr/pc/comandos" 
 TOPICO_ASSINAR = "pucpr/+/dados" 
 CLIENT_ID = "pc-pucpr-001"
