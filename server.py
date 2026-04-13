@@ -35,8 +35,8 @@ def on_message(client, userdata, msg):
     except json.JSONDecodeError:
         print(f" -> Dado em texto puro: {payload}")
 
-def on_disconnect(client, userdata, flags, rc, properties):
-    print(f"[PC] Desconectado do broker (rc={rc})")
+def on_disconnect(client, userdata, disconnect_flags, reason_code, properties):
+    print(f"[PC] Desconectado do broker (rc={reason_code})")
 
 def main():
     client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id=CLIENT_ID)
