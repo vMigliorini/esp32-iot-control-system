@@ -7,8 +7,8 @@ from hcsr04 import HCSR04
 import time
 import json
 
-SSID = "Mota"
-SENHA = "12345678"
+SSID = "sua-rede"
+SENHA = "sua-senha"
 BROKER = "test.mosquitto.org"
 PORTA = 1883
 CLIENT_ID = "caua-da-massa2"
