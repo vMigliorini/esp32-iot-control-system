@@ -23,11 +23,6 @@ def on_connect(client, userdata, flags, rc, properties):
 
 def on_message(client, userdata, msg):
     """Chamada quando uma mensagem e recebida."""
-    try:
-        confirmacao_entrega = json.dumps({"status": "mensagem_recebida"})
-        client.publish(TOPICO_PUBLICAR, confirmacao_entrega)
-    except Exception:
-        print("\n[PC] Erro ao confirmar entrega ao broker")
 
     payload = msg.payload.decode("utf-8")
     print(f"[PC] Mensagem recebida em '{msg.topic}': {payload}")
@@ -43,7 +38,7 @@ def on_message(client, userdata, msg):
         if "distancia" in dados:
             print(f" -> Distância: {dados['distancia']} cm")
             
-    except json.JSONDecodeError:
+    except json.JSONDecodeError:    
         print(f" -> Dado em texto puro: {payload}")
 
 def on_disconnect(client, userdata, flags, rc, properties):
