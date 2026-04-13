@@ -6,12 +6,13 @@ import dht
 from hcsr04 import HCSR04
 import time
 import json
+from config import SSID, SENHA, BROKER, PORTA
 
-SSID = "sua-rede"
-SENHA = "sua-senha"
+SSID = "sua_rede_aqui"
+SENHA = "sua_senha_aqui"
 BROKER = "test.mosquitto.org"
 PORTA = 1883
-CLIENT_ID = "caua-da-massa2"
+CLIENT_ID = "user_ESP32"
     
 
 TOPICO_PUBLICAR = "pucpr/sensor_dht/dados"
