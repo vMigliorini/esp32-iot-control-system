@@ -5,9 +5,9 @@ import json
 
 BROKER = "test.mosquitto.org"
 PORTA = 1883
-PREFIXO = "" #
-TOPICO_PUBLICAR = "pucpr/pc/comandos" 
-TOPICO_ASSINAR = "pucpr/+/dados" 
+PREFIXO = "" #gere um UUID: python -c "import uuid; print(uuid.uuid4())"
+TOPICO_PUBLICAR = f"{PREFIXO}/pc/comandos" 
+TOPICO_ASSINAR = f"{PREFIXO}/+/dados" 
 CLIENT_ID = "pc-pucpr-001"
 
 def on_connect(client, userdata, flags, rc, properties):
