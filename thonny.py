@@ -25,7 +25,6 @@ led = machine.Pin(2, Pin.OUT)
 
 led_estado = False
 buzzer_estado = False
-publicado = True
 
 def conectar_wifi():
     wlan = network.WLAN(network.STA_IF)
@@ -48,7 +47,6 @@ def conectar_wifi():
 def callback_mensagem(topico, mensagem):
     global led_estado
     global buzzer_estado
-    global publicado
     topico = topico.decode("utf-8")
     payload = mensagem.decode("utf-8")
     print(f"[MICRO] Recebido em '{topico}': {payload}")
@@ -56,11 +54,6 @@ def callback_mensagem(topico, mensagem):
     try:
         dados = json.loads(payload)
         comando = dados.get("comando", "")
-        status_entrega = dados.get("status", "")
-        
-        if status_entrega == "mensagem_rece_bida":
-            publicado = True
-            print("[MICRO] Dados entregues!")
             
         if comando == "led_on":
             led.value(1)
@@ -92,16 +85,12 @@ def callback_mensagem(topico, mensagem):
         print(f"[MICRO] Erro ao processar: {e}")
 
 def publicar_estado_led():
-    global publicado
-    publicado = False
     estado = "ligado" if led_estado else "desligado"
     msg = json.dumps({"led": estado})
     client.publish(TOPICO_PUBLICAR, msg, qos=1)
     print(f"[MICRO] Publicado: {msg}")
     
 def publicar_estado_buzzer():
-    global publicado
-    publicado = False
     estado = "ligado" if buzzer_estado else "desligado"
     msg = json.dumps({"buzzer": estado})
     client.publish(TOPICO_PUBLICAR, msg, qos=1)
@@ -118,8 +107,6 @@ def publicar_dados_hcsr04():
     print(f"[MICRO] Dados publicados: {msg}")
     
 def publicar_dados_sensor():
-    global publicado
-    publicado = False
     sensor.measure()
     dados = {
         "temperatura": sensor.temperature(),
